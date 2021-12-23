@@ -26,7 +26,7 @@ const generateRandomString = function(length) {
 
 const app = express();
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '../client/build'))
    .use(cookieParser())
    .use(cors({credentials: true, origin: 'http://localhost:3000'}))   
    .use(express.json())
