@@ -11,7 +11,7 @@ require('dotenv').config();
 const redirectUri = 'http://localhost:3000/dashboard';
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
-const PORT = process.env.REACT_APP_PORT || 3001;
+const PORT = process.env.PORT || 3001;
 
 const generateRandomString = function(length) {
   let text = '';
