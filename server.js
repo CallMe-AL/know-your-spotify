@@ -48,7 +48,7 @@ app.get('/hello', function(req, res) {
 })
 
 // *** authorization ***
-app.get('/login', function(req, res) {
+app.get('/login-spotify', function(req, res) {
   const authEndPoint = "https://accounts.spotify.com/authorize";
   // const state = require("crypto").randomBytes(64).toString('hex');
   const state = generateRandomString(16);
