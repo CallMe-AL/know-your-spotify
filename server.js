@@ -27,20 +27,19 @@ const generateRandomString = function(length) {
 
 const app = express();
 
-app.use(express.static(__dirname + 'client/public'))
+app.use(express.static(__dirname + 'client/build'))
    .use(cookieParser())
    .use(cors({credentials: true, origin: 'https://know-your-spotify.herokuapp.com/dashboard'}))   
    .use(express.json())
    .use(express.urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Serve any static files
+app.use(express.static(path.join(__dirname, 'client/build')));
 // Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 app.get('/hello', function(req, res) {
   console.log(req.originalUrl);
