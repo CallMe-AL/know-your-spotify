@@ -7,7 +7,7 @@ const Login = () => {
         <h2>Login to your Spotify account to play</h2>   
         <a 
           className="login-btn"
-          href='https://know-your-spotify.herokuapp.com/login-spotify'
+          href='/login-spotify'
         >Login with Spotify</a>
         <p className="premium-warning">**Note: a Spotify Premium account is required to play</p>
       </div>

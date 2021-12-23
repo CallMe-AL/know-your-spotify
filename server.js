@@ -8,7 +8,7 @@ const { stat } = require('fs');
 require('dotenv').config();
 
 // env stuff
-const redirectUri = 'http://localhost:3000/dashboard';
+const redirectUri = 'https://know-your-spotify.herokuapp.com/dashboard';
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 const PORT = process.env.PORT || 3001;
@@ -29,7 +29,7 @@ const app = express();
 
 app.use(express.static(__dirname + 'client/public'))
    .use(cookieParser())
-   .use(cors({credentials: true, origin: 'http://localhost:3000'}))   
+   .use(cors({credentials: true, origin: 'https://know-your-spotify.herokuapp.com/dashboard'}))   
    .use(express.json())
    .use(express.urlencoded({ extended: true }));
 
