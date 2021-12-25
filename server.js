@@ -27,7 +27,7 @@ const generateRandomString = function(length) {
 
 const app = express();
 
-app.use(express.static(path.resolve(__dirname, 'client/public')))
+app.use(express.static(path.resolve(__dirname, 'client/build')))
    .use(cookieParser())
    .use(cors({credentials: true, origin: redirectUri}))   
    .use(express.json())
@@ -38,7 +38,7 @@ app.use(express.static(path.resolve(__dirname, 'client/public')))
 // app.use(express.static(__dirname, 'client/public'));
 // // Handle React routing, return all requests to React app
 app.get('/*', function(req, res) {
-  res.sendFile(__dirname, 'client/public', 'index.html');
+  res.sendFile(__dirname, 'client/build', 'index.html');
 });
 
 app.get('/hello', function(req, res) {
