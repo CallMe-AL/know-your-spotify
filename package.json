@@ -9,7 +9,7 @@
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "engines": {
-    "node": "v.16.13.0"
+    "node": "16.13.0"
   },
   "keywords": [],
   "author": "",
