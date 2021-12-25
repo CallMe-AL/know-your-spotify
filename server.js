@@ -33,9 +33,6 @@ app.use(express.static(path.join(__dirname, 'client/build')))
    .use(express.json())
    .use(express.urlencoded({ extended: true }));
 
-
-// Serve any static files
-// app.use(express.static(__dirname, 'client/public'));
 // // Handle React routing, return all requests to React app
 // app.get('/*', function(req, res) {
 //   res.sendFile(__dirname, 'client/public', 'index.html');
