@@ -11,7 +11,7 @@ ReactDOM.render(
   // <React.StrictMode>
   //   <App />
   // </React.StrictMode>
-  <HashRouter>   
+  <BrowserRouter>   
     <React.StrictMode>  
       <Routes>
         <Route path="/" element={<App />}>
@@ -29,7 +29,7 @@ ReactDOM.render(
           />
       </Routes>
     </React.StrictMode>
-  </HashRouter>,
+  </BrowserRouter>,
   document.getElementById('root')
 );
 

@@ -27,7 +27,7 @@ const generateRandomString = function(length) {
 
 const app = express();
 
-app.use(express.static(path.resolve(__dirname, 'client/build')))
+app.use(express.static(path.join(__dirname, 'client/build')))
    .use(cookieParser())
    .use(cors({credentials: true, origin: redirectUri}))   
    .use(express.json())
@@ -37,9 +37,9 @@ app.use(express.static(path.resolve(__dirname, 'client/build')))
 // Serve any static files
 // app.use(express.static(__dirname, 'client/public'));
 // // Handle React routing, return all requests to React app
-app.get('/*', function(req, res) {
-  res.sendFile(__dirname, 'client/build', 'index.html');
-});
+// app.get('/*', function(req, res) {
+//   res.sendFile(__dirname, 'client/public', 'index.html');
+// });
 
 app.get('/hello', function(req, res) {
   console.log(req.originalUrl);
@@ -48,7 +48,7 @@ app.get('/hello', function(req, res) {
 
 // *** authorization ***
 app.get('/login-spotify', function(req, res) {
-  console.log('got the request');
+  console.log(redirectUri);
   const authEndPoint = "https://accounts.spotify.com/authorize";
   // const state = require("crypto").randomBytes(64).toString('hex');
   const state = generateRandomString(16);
@@ -78,7 +78,7 @@ app.get('/login-spotify', function(req, res) {
 });
 
 // *** callback ***
-app.get('/callback', function(req, res) {
+app.get('/api/callback', function(req, res) {
   // your application requests refresh and access tokens
   // after checking the state parameter
   const code = req.query.code || null;
@@ -119,7 +119,7 @@ app.get('/callback', function(req, res) {
 });
 
 // requesting access token from refresh token
-app.get('/refresh_token', function(req, res) {
+app.get('/api/refresh_token', function(req, res) {
   const refresh_token = req.query.refresh_token;
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',

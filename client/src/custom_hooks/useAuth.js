@@ -7,7 +7,7 @@ export default function useAuth(code) {
 
   useEffect(() => {
     
-    fetch("/callback" + window.location.search, {
+    fetch("/api/callback" + window.location.search, {
       credentials: "include"
     })
     .then(res => res.json())
@@ -27,7 +27,7 @@ export default function useAuth(code) {
     const callRefresh = async () => {
       try {
         const query = `/?refresh_token=${refreshToken}`;
-        const res = await fetch("/refresh_token" + query)
+        const res = await fetch("/api/refresh_token" + query)
         const json = await res.json()
         
         setAccessToken(json.access_token);
