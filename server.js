@@ -8,7 +8,7 @@ const { stat } = require('fs');
 require('dotenv').config();
 
 // env stuff
-const redirectUri = 'https://know-your-spotify.herokuapp.com/dashboard';
+const redirectUri = process.env.REACT_APP_REDIRECT_URI;
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 const PORT = process.env.PORT || 3001;
@@ -27,18 +27,18 @@ const generateRandomString = function(length) {
 
 const app = express();
 
-app.use(express.static(__dirname + 'client/build'))
+app.use(express.static(path.resolve(__dirname, 'client/public')))
    .use(cookieParser())
-   .use(cors({credentials: true, origin: 'https://know-your-spotify.herokuapp.com/dashboard'}))   
+   .use(cors({credentials: true, origin: redirectUri}))   
    .use(express.json())
    .use(express.urlencoded({ extended: true }));
 
 
 // Serve any static files
-app.use(express.static(path.join(__dirname, 'client/build')));
-// Handle React routing, return all requests to React app
+// app.use(express.static(__dirname, 'client/public'));
+// // Handle React routing, return all requests to React app
 app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  res.sendFile(__dirname, 'client/public', 'index.html');
 });
 
 app.get('/hello', function(req, res) {
