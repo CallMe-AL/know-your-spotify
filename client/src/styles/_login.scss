@@ -1,6 +1,7 @@
 .main-wrapper {
   @include theme($theme: centered);
   margin: 0 auto;
+  position: relative;
 
   border-radius: $border-radius;
   padding: 10px;
