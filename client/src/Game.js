@@ -117,12 +117,11 @@ const Game = (props) => {
 
     let interval = setInterval(countDown, 1000);
     return () => clearInterval(interval);
-  }, [gameStart]);  
+  }, [gameStart]);
 
 
   return (
     <div className="game-wrapper">
-      {/* <Link className="dashboard-return" to="/dashboard"><i class="fas fa-chevron-left"></i>Return to dashboard</Link> */}
       <h1>{gameInfo}</h1>
       <h2>{timeLeft}</h2> 
       <div className="choices-wrapper">

@@ -66,9 +66,7 @@ app.get('/login-spotify', function(req, res) {
   'user-library-read',
   'user-top-read',
   'user-read-playback-position',
-  'user-read-recently-played',
-  'user-follow-read',
-  'user-follow-modify'
+  'user-read-recently-played'
   ];
   scopes.join("%20");
   res.redirect(`${authEndPoint}?response_type=code&client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}&show_dialogue=true`);
