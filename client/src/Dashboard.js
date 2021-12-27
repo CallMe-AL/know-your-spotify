@@ -42,7 +42,8 @@ const Dashboard = (props) => {
         <h1>Choose your playlist to get started!</h1>
         
         <div className="playlist-container">
-          {playlists && playlists.map(list => {
+          {playlists.length > 0 
+          ? playlists.map(list => {
             return (
             <ListItem 
               imgUrl={list.images[0].url}
@@ -53,7 +54,9 @@ const Dashboard = (props) => {
               id={list.id}
               onClick={choosePlaylist}
               href={list.href} /> )
-          })}        
+          })
+        
+          : <div>Loading playlists...</div>}        
         </div>
         <button className="rules-container" onClick={() => setAppearance('rules show')}>
             <h2>Rules</h2>
