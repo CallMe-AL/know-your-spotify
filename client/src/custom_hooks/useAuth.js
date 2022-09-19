@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function useAuth(code) {
+  const [error, setError] = useState('');
   const [accessToken, setAccessToken] = useState();
   const [refreshToken, setRefreshToken] = useState();
   const [expiresIn, setExpiresIn] = useState();
@@ -10,12 +11,19 @@ export default function useAuth(code) {
     fetch("/api/callback" + window.location.search, {
       credentials: "include"
     })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        setAccessToken(null);
+        setError({ success: false, res: res.status});
+        return; 
+      }
+      return res.json()
+    })
     .then(data => {
-      setAccessToken(data.accessToken);
+      setAccessToken({ success: true, accessToken: data.accessToken});
       setRefreshToken(data.refreshToken);
       setExpiresIn(data.expiresIn);
-      window.history.pushState({}, null, "/dashboard")
+      window.history.pushState({}, null, "/")
     })
     .catch((err) => {
       console.log(err);
@@ -49,5 +57,10 @@ export default function useAuth(code) {
     }
   }, [refreshToken, expiresIn]);
   
-  return accessToken;
+  if (accessToken !== null) {
+    return accessToken;
+  } else {
+    return error;
+  }
+  
 }

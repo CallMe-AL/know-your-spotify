@@ -52,7 +52,8 @@ const Choice = (props) => {
                 artist={props.winningSong.track.artists[0].name} 
                 album={props.winningSong.track.album.name} 
                 released={props.winningSong.track.album.release_date}
-            />}
+            />
+      }
     </div>
   )
 }

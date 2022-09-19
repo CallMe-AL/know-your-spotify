@@ -3,12 +3,14 @@ import SpotifyWebApi from "spotify-web-api-js";
 import { useEffect, useState } from "react";
 import ListItem from "./ListItem";
 import Rules from './Rules';
+import Error from './Error';
 
 const spotify = new SpotifyWebApi();
 
 const Dashboard = (props) => {
 
   const [playlists, setPlaylists] = useState([]);
+  const [error, setError] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [appearance, setAppearance] = useState('rules hide');
 
@@ -16,7 +18,12 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     if(!accessToken) return;
-    spotify.setAccessToken(accessToken);
+    if (accessToken.success) {
+      spotify.setAccessToken(accessToken.accessToken);
+    } else {
+      setError(accessToken.res);
+    }
+    
   }, [accessToken]);
   
   useEffect(() => {    
@@ -42,21 +49,25 @@ const Dashboard = (props) => {
         <h1>Choose your playlist to get started!</h1>
         
         <div className="playlist-container">
-          {playlists.length > 0 
-          ? playlists.map(list => {
-            return (
-            <ListItem 
-              imgUrl={list.images[0].url}
-              accessToken={accessToken}
-              name={list.name}
-              uri={list.uri}
-              key={list.id}
-              id={list.id}
-              onClick={choosePlaylist}
-              href={list.href} /> )
-          })
-        
-          : <div>Loading playlists...</div>}        
+          {
+            playlists.length > 0 
+              ? playlists.map(list => {
+                  return (
+                    <ListItem 
+                      imgUrl={list.images[0].url}
+                      accessToken={accessToken}
+                      name={list.name}
+                      uri={list.uri}
+                      key={list.id}
+                      id={list.id}
+                      onClick={choosePlaylist}
+                      href={list.href} /> 
+                    )
+                  })
+            
+              // : <div>{ error ? `Response status ${error}: try logging in again.` : 'Loading playlists...'}</div>
+              : <div>{ error ? <Error error={error} /> : 'Loading playlists...'}</div>
+          }        
         </div>
         <button className="rules-container" onClick={() => setAppearance('rules show')}>
             <h2>Rules</h2>

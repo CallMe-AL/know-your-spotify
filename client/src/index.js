@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Dashboard from './Dashboard';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Game from './Game';
 import Login from './Login';
 
@@ -11,13 +11,10 @@ ReactDOM.render(
   // <React.StrictMode>
   //   <App />
   // </React.StrictMode>
-  <BrowserRouter>   
+  <HashRouter>   
     <React.StrictMode>  
       <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="login" element={<Login />} />
-          <Route path="dashboard" element={<Dashboard />} />
-        </Route>
+        <Route path="/" element={<App />} />
         <Route path="game" element={<Game />} /> 
         <Route
             path="*"
@@ -29,7 +26,7 @@ ReactDOM.render(
           />
       </Routes>
     </React.StrictMode>
-  </BrowserRouter>,
+  </HashRouter>,
   document.getElementById('root')
 );
 

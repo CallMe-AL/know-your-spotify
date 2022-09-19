@@ -53,20 +53,19 @@ app.get('/login-spotify', function(req, res) {
 
   // application requests authorization
   const scopes = [
-  'streaming',
-  'ugc-image-upload',
-  'user-read-playback-state',
-  'user-read-currently-playing',
-  'app-remote-control',
-  'user-read-email',
-  'user-read-private',
-  'playlist-read-collaborative',
-  'playlist-read-private',
-  'user-library-modify',
-  'user-library-read',
-  'user-top-read',
-  'user-read-playback-position',
-  'user-read-recently-played'
+    'streaming',
+    'user-read-playback-state',
+    'user-read-currently-playing',
+    'app-remote-control',
+    'user-read-email',
+    'user-read-private',
+    'playlist-read-collaborative',
+    'playlist-read-private',
+    'user-library-modify',
+    'user-library-read',
+    'user-top-read',
+    'user-read-playback-position',
+    'user-read-recently-played'
   ];
   scopes.join("%20");
   res.redirect(`${authEndPoint}?response_type=code&client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}&show_dialogue=true`);
@@ -89,11 +88,12 @@ app.get('/api/callback', function(req, res) {
       url: 'https://accounts.spotify.com/api/token',
       form: {
         code: code,
-        redirect_uri: redirectUri,
+        redirect_uri: redirectUri, // used for validation only, no actual redirection
         grant_type: 'authorization_code'
       },
       headers: {
-        'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64'))
+        'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       json: true
     };
@@ -118,7 +118,10 @@ app.get('/api/refresh_token', function(req, res) {
   const refresh_token = req.query.refresh_token;
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')) },
+    headers: { 
+      'Authorization': 'Basic ' + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
+      'Content-Type': 'application/x-www-form-urlencoded' 
+    },
     form: {
       grant_type: 'refresh_token',
       refresh_token: refresh_token
@@ -140,6 +143,10 @@ app.get('/api/refresh_token', function(req, res) {
     }
   });
 });
+
+// app.get('/api/' + clientId + '/?error=invalid_token', function(req, res) {
+//   res.send(req.statusCode, 'Error, try logging in again.');
+// });
 
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`)
