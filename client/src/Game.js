@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import Choice from "./Choice";
 import WebPlayback from "./WebPlayback";
 import GameInfo from './GameInfo';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthContext } from './custom_hooks/useAuthContext';
 
 const spotify = new SpotifyWebApi();
 
@@ -12,56 +13,135 @@ const Game = (props) => {
   const [songs, setSongs] = useState([]);
   const [gameSongs, setGameSongs] = useState([]);
   const [winningSong, setWinningSong] = useState(null);
-  const [gameInfo, setGameInfo] = useState('Hit start game to play!');
+  const [winningUri, setWinningUri] = useState(null);
+  const [gameInfo, setGameInfo] = useState('Almost ready!');
   const [gameStart, setGameStart] = useState(false);
-  const [winCondition, setWinCondition] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [score, setScore] = useState(0);
   const [points, setPoints] = useState(6);
+  const [possiblePoints, setPossiblePoints] = useState(null);
 
   const location = useLocation();
   const accessToken = spotify.getAccessToken();
   const { id } = location.state;
+  const navigate = useNavigate();
+
+  const { is_active } = useAuthContext();
+
+  useEffect(() => {
+    if (!is_active) {
+      navigate('/');
+    }
+  }, [is_active])
 
   // grabbing playlist's songs
   useEffect(() => {
     if (!id) return;
     spotify.getPlaylistTracks(id)
       .then(data => {
-        console.log('songs', data)
+        console.log('songs', data);
         setSongs(data.items);
+        const points = data.items.length * 6;
+        setPossiblePoints(points);
       })
       .catch(err => {
         console.log(err);
+        if (err.statusText === 'Unauthorized') {
+          console.log('Your previous session expired. You\'ll have to login again.');
+        }
       })
-    console.log(songs);
-  }, [props.selectedPlaylist]);
+  }, [id]);
+
+  // choose 4 random songs
+  const createGame = () => {
+
+    if (songs.length === 0) {
+      setGameInfo('Go back and pick some songs!');
+      return;
+    }
+
+    // prevents user shuffling to a new song
+    // no getting out of a round ;)
+    if (gameStart) {
+      setGameInfo('Please finish the round!');
+      return;
+    };
+
+    setWinningSong(null);
+    setGameSongs([]);
+    let uri = chooseGameSongs();   
+    
+    return uri;
+  } 
 
   // choosing which albums will be visible during the game
-  // picks and removes winning song from current songs list so it won't play again
   const chooseGameSongs = () => {
-    let gameSongs = [];
+
+    let game_songs = [];
 
     const winningIndex = Math.floor(Math.random() * songs.length);
-    gameSongs.push(songs[winningIndex]);
-    setWinningSong(songs[winningIndex]);
-    songs.splice(winningIndex, 1);
+    game_songs.push(songs[winningIndex]);
+    // setWinningUri(songs[winningIndex].track.uri);
+    
+    // create a temp array from songs state to manipulate
+    let temp_songs = [...songs];
+    temp_songs.splice(winningIndex, 1); 
 
-    for (let i = 0; gameSongs.length < 4; i++) {
-      const rndmNum = Math.floor(Math.random() * songs.length);        
-      let albumName = songs[rndmNum].track.album.name;
+    // **temp songs set, not filtered, bc there may be other songs not chosen yet from similar albums :)
+    setSongs(temp_songs); 
 
-      let albumNames = gameSongs.map(song => {
-        return song.track.album.name;
-      })
+    // filter out similar albums to winning song before setting new songs
+    let filtered_songs = filterSimilarAlbums(game_songs[0].track.album.id, temp_songs);   
+    
+    // pick more songs for game
+    let new_songs = createGameSongs(filtered_songs);
+    game_songs = [...game_songs, ...new_songs];
 
-      if (!albumNames.includes(albumName)) {
-        gameSongs.push(songs[rndmNum]);
-      }
+    // shuffle game songs (because that's more fun)
+    const newGameSongs = shuffleSongs(game_songs);
+
+    // set states
+    setGameSongs(newGameSongs);
+    setWinningSong(songs[winningIndex]);     
+    resetState();
+
+    return songs[winningIndex].track.uri;
+  }
+
+  const createGameSongs = (filtered_tracks) => {
+
+    // create a new array from filtered tracks to manipulate
+    let new_songs = [...filtered_tracks];
+
+    let games_array = [];
+
+    // while new songs array is not 0
+    while (new_songs.length !== 0) {
+      // we want a max of 3, bc game songs should not go over 4 total
+      if (games_array.length === 3) break;     
+
+      // pick a random track from existing song array
+      const rndmNum = Math.floor(Math.random() * new_songs.length); 
+      const random_track = new_songs[rndmNum];
+
+      // adds to games array and removes from songs array
+      games_array.push(random_track);
+      new_songs.splice(rndmNum, 1);
+
+      // filter similar albums to the new track
+      let filtered_tracks = filterSimilarAlbums(random_track.track.album.id, new_songs);
+      new_songs = [...filtered_tracks];
     }
+
+    return games_array;
+
+  }
+
+  const filterSimilarAlbums = (id, songs_array) => {
+
+    const filtered_albums = songs_array.filter(song => id !== song.track.album.id);
+    return filtered_albums;
     
-    
-    return gameSongs;
   }
 
   const shuffleSongs = (array) => {
@@ -81,25 +161,14 @@ const Game = (props) => {
     }
 
     return array;
-  }
+  }  
 
-  // choose 4 random songs
-  const createGame = () => {
-    // prevents user shuffling to a new song
-    // no getting out of a round ;)
-    if (gameStart) {
-      setGameInfo('Please finish the round!');
-      return;
-    };
-    const gameSongs = chooseGameSongs();
-    const newGameSongs = shuffleSongs(gameSongs);
-    setGameInfo('Guess wisely!');
-    setGameSongs(newGameSongs);
+  const resetState = () => {
     setPoints(6);
-    setWinCondition(false);
     setTimeLeft(10);
     setGameStart(true);
-  } 
+    setGameInfo('Guess wisely!');
+  }
 
   useEffect(() => {
 
@@ -119,36 +188,42 @@ const Game = (props) => {
     return () => clearInterval(interval);
   }, [gameStart]);
 
+  if (!is_active) {
+    return (
+      <></>
+    )
+  }
 
   return (
-    <div className="game-wrapper">
+    <div className="game-wrapper">      
       <h1>{gameInfo}</h1>
       <h2>{timeLeft}</h2> 
-      <div className="choices-wrapper">
-      {winningSong && gameSongs.map(song => {
-        return <Choice 
-                  key={song.track.id}
-                  song={song} 
-                  winningSong={winningSong} 
-                  setPoints={setPoints} 
-                  points={points} 
-                  score={score}
-                  setScore={setScore}
-                  setGameInfo={setGameInfo}
-                  setGameStart={setGameStart}
-                  setWinCondition={setWinCondition}
-                  gameStart={gameStart}
-                  timeLeft={timeLeft}
-                />
-        })            
-      }   
-      </div>
-      <button className="game-btn" onClick={createGame}>Start game</button>
+      <div className={`choices-wrapper ${gameStart ? '' : 'game-over'}`}>
+        {winningSong && gameSongs.map((song, index) => {
+          return <Choice 
+                    key={index}
+                    song={song} 
+                    winningSong={winningSong} 
+                    setPoints={setPoints} 
+                    points={points} 
+                    score={score}
+                    setScore={setScore}
+                    setGameInfo={setGameInfo}
+                    setGameStart={setGameStart}
+                    gameStart={gameStart}
+                    timeLeft={timeLeft}
+                  />
+          })            
+        }   
+      </div>             
       <WebPlayback 
           token={accessToken}
-          uri={winningSong?.track.uri}
+          // uri={winningSong?.track.uri}
+          winningUri={winningUri}
+          createGame={createGame}
+          setGameInfo={setGameInfo}
       />
-      <GameInfo score={score} points={points} songs={songs}/> 
+      <GameInfo score={score} points={points} songs={songs} possiblePoints={possiblePoints} /> 
     </div>
   )
 }

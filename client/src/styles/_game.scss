@@ -1,43 +1,51 @@
+@use "_config.scss";
+
 .game-wrapper {
-  @include theme($theme: centered);
-  max-width: 500px;
+  height: 100%;
+  max-width: 950px;
   position: relative;
   margin: 0 auto;
-  padding-top: 50px;
+  padding: clamp(3.2rem, 8.5vh, 8rem) 1rem 3.2rem 1rem;
 
-  .dashboard-return {
-    text-decoration: none;
-    color: white;
-    font-size: 1rem;
-    position: absolute;
-    top: 25px;
-    left: 15px;
-
-    .fa-chevron-left {
-      margin-right: 5px;
-    }
+  @media (min-width: 760px) {
+    width: 80%;
   }
+
   h1 {
     text-align: center;
+    background-color: config.$bg-secondary;
+    padding: 0.5rem clamp(0.5rem, 5vw, 0.9rem);
+    border-radius: config.$border-radius;
+    font-size: 1.7rem;
+    margin: 0 auto clamp(0.3rem, 1.5vh, 2rem) auto;    
   }
 
-  .game-btn {
-    @include btn($theme: btn-theme);
-    margin-bottom: 10px;
+  h2 {
+    text-align: center;
+    margin-bottom: clamp(0.3rem, 1.5vh, 2rem);
   }
 
   .game-info {
     display: flex;
     justify-content: flex-start;
-    width: 100%;
+    background-color: config.$bg-secondary;    
+    padding: 0.5rem;
+    border-radius: config.$border-radius;
+    margin: 0 auto;
 
     .game-info-list {
-      margin-left: 15px;
-
+      margin-inline: clamp(1rem, 6vw, 3rem);
       list-style-type: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
 
       li {
-        margin-bottom: 5px;
+        margin-bottom: 0.3125rem;
+      }
+
+      li:last-child {
+        grid-column: span 2;
       }
     }
   }

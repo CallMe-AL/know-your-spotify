@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
 
-const ListItem = (props) => {
+const ListItem = ({ id, imgUrl, name}) => {
   return (
     <Link 
       to="game"
-      state={{ id: props.id }}
+      state={{ id: id }}
       className="item-container"
-      // onClick={() => props.onClick(props.id)}
     >
-      <img src={props.imgUrl} alt={`Playlist icon for ${props.name}`} />
-      <div>{props.name}</div>
+      {/* only offers one image size, 640x640, as of 10/2/22 */}
+      <img className="item-icon" src={imgUrl} alt={`Playlist icon for ${name}`} />
+      <p className="item-info">{name}</p>
     </Link>
   )
 }

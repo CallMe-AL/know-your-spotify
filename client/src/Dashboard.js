@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ListItem from "./ListItem";
 import Rules from './Rules';
 import Error from './Error';
+import { useAuthContext } from "./custom_hooks/useAuthContext";
 
 const spotify = new SpotifyWebApi();
 
@@ -11,15 +12,16 @@ const Dashboard = (props) => {
 
   const [playlists, setPlaylists] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [appearance, setAppearance] = useState('rules hide');
 
   const accessToken = useAuth(props.code);
+  const { setIsActive } = useAuthContext();
 
   useEffect(() => {
     if(!accessToken) return;
     if (accessToken.success) {
       spotify.setAccessToken(accessToken.accessToken);
+      setIsActive(true);
     } else {
       setError(accessToken.res);
     }
@@ -37,15 +39,11 @@ const Dashboard = (props) => {
       })
   }, [accessToken]);
 
-  const choosePlaylist = (id) => {
-    setSelectedPlaylist(id);
-    console.log(id);
-  }
-
   return (
-    <>      
+    <>  
+      <Rules appearance={appearance} setAppearance={setAppearance}/>  
       <div className="dashboard-wrap">
-        <Rules appearance={appearance} setAppearance={setAppearance}/>
+        
         <h1>Choose your playlist to get started!</h1>
         
         <div className="playlist-container">
@@ -60,16 +58,14 @@ const Dashboard = (props) => {
                       uri={list.uri}
                       key={list.id}
                       id={list.id}
-                      onClick={choosePlaylist}
                       href={list.href} /> 
                     )
                   })
             
-              // : <div>{ error ? `Response status ${error}: try logging in again.` : 'Loading playlists...'}</div>
-              : <div>{ error ? <Error error={error} /> : 'Loading playlists...'}</div>
+              : <div className="ui-msg">{ error ? <Error error={error} /> : 'Loading playlists...'}</div>
           }        
         </div>
-        <button className="rules-container" onClick={() => setAppearance('rules show')}>
+        <button className="rules-btn" onClick={() => setAppearance('rules show')}>
             <h2>Rules</h2>
             <i className="fas fa-bars"></i>
         </button>

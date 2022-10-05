@@ -1,10 +1,17 @@
-const GameInfo = (props) => {
+
+const GameInfo = ({
+  songs,
+  points,
+  possiblePoints,
+  score
+}) => {
+
   return (
     <div className="game-info">
       <ul className="game-info-list">
-        <li>Score: {props.score}</li>
-        <li>Possible points: {props.points}</li>
-        <li>Songs remaining: {props.songs.length}</li>
+        <li>Score: {`${score} / ${possiblePoints}`}</li>
+        <li>Possible points: {points}</li>
+        <li>Songs remaining: {songs.length}</li>
       </ul>
     </div>
   )

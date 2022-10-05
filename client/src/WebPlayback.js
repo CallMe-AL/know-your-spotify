@@ -3,15 +3,20 @@ import SpotifyWebApi from "spotify-web-api-js";
 import { Link } from 'react-router-dom';
 
 
-const WebPlayback = (props) => {
+const WebPlayback = ({
+  createGame,
+  setGameInfo,
+  token,
+  winningUri
+}) => {
 
   const [player, setPlayer] = useState(undefined);
-  const [is_paused, setPaused] = useState(false);
+  const [is_paused, setPaused] = useState(true);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(null);
   const [devId, setDevId] = useState(null);
   const [playerReady, setPlayerReady] = useState(false);
-  const [winningUri, setWinningUri] = useState(props.uri);
+  // const [winningUri, setWinningUri] = useState(winningUri);
 
   const spotify = new SpotifyWebApi();
 
@@ -27,7 +32,7 @@ const WebPlayback = (props) => {
       
       const player = new window.Spotify.Player({
         name: 'Web Playback SDK',
-        getOAuthToken: cb => { cb(props.token) },
+        getOAuthToken: cb => { cb(token) },
         volume: 0.5
       });
 
@@ -39,6 +44,7 @@ const WebPlayback = (props) => {
         const id = device_id;
         setDevId(id);
         setPlayerReady(true);
+        setGameInfo('Hit start game to play!');
       });      
 
       player.addListener('initialization_error', ({ message }) => { 
@@ -47,6 +53,10 @@ const WebPlayback = (props) => {
 
       player.addListener('not_ready', ({ device_id }) => {
         console.log('Device ID has gone offline', device_id);
+      });
+
+      player.addListener('autoplay_failed', () => {
+        alert('Autoplay is not allowed by the browser autoplay rules');
       });
 
       player.addListener('player_state_changed', ( state => {
@@ -59,7 +69,7 @@ const WebPlayback = (props) => {
         setPaused(state.paused);
 
         player.getCurrentState().then( state => { 
-            (!state)? setActive(false) : setActive(true) 
+            (!state) ? setActive(false) : setActive(true) 
         });
 
       }));
@@ -70,28 +80,39 @@ const WebPlayback = (props) => {
 
   }, []);
 
-  useEffect(() => {
+  const newGame = () => {
+    if (!playerReady) {
+      setGameInfo('Loading media player...');
+      return;
+    };
 
-    if (!playerReady) return;
+    let winning_uri = createGame();
 
-    spotify.play({ device_id: devId, uris: [winningUri], position_ms: 60000 }, function(err) {
+    spotify.play({ device_id: devId, uris: [winning_uri], position_ms: 60000 }, function(err) {
       if (err) {
         console.log(err);
       }
     });
-    
-  }, [playerReady, winningUri]);
 
-  useEffect(() => {
-    setWinningUri(props.uri);
-  }, [props.uri]);
+    window.onpopstate = () => {
+      player.disconnect();
+    }
+
+  }
 
   return (
     <div className="player-container">
       <Link className="dashboard-return" to="/" onClick={() => { player.disconnect() }}><i className="fas fa-chevron-left"></i>Return home</Link>
-      <button className="btn-spotify" onClick={() => { player.togglePlay() }} >
-        { is_paused ? <i class="fas fa-play"></i> : <i class="fas fa-pause"></i> }
-      </button>
+      {
+        playerReady
+        ? <div className='inner-player-wrap'>
+            <button className="btn-spotify" onClick={() => { player.togglePlay() }} >
+              { is_paused ? <i className="fas fa-play"></i> : <i className="fas fa-pause"></i> }
+            </button>
+            <button className="game-btn" onClick={newGame}>New game</button>
+          </div>
+        : <p>Loading media player...</p>
+      }
     </div>
   )
 }
