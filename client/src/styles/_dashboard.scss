@@ -8,6 +8,7 @@
   position: relative;
   overflow-y: hidden;
   gap: clamp(1rem, 5vh, 5rem);
+  overflow-y: hidden;
 
   h1 {
     background-color: config.$bg-secondary;

@@ -40,10 +40,9 @@ const Dashboard = (props) => {
   }, [accessToken]);
 
   return (
-    <>  
-      <Rules appearance={appearance} setAppearance={setAppearance}/>  
-      <div className="dashboard-wrap">
-        
+    <>         
+      <main className="dashboard-wrap">
+        <Rules appearance={appearance} setAppearance={setAppearance}/> 
         <h1>Choose your playlist to get started!</h1>
         
         <div className="playlist-container">
@@ -69,7 +68,7 @@ const Dashboard = (props) => {
             <h2>Rules</h2>
             <i className="fas fa-bars"></i>
         </button>
-      </div>    
+      </main>    
     </>
   )
 }

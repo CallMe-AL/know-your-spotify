@@ -195,7 +195,7 @@ const Game = (props) => {
   }
 
   return (
-    <div className="game-wrapper">      
+    <main className="game-wrapper">      
       <h1>{gameInfo}</h1>
       <h2>{timeLeft}</h2> 
       <div className={`choices-wrapper ${gameStart ? '' : 'game-over'}`}>
@@ -224,7 +224,7 @@ const Game = (props) => {
           setGameInfo={setGameInfo}
       />
       <GameInfo score={score} points={points} songs={songs} possiblePoints={possiblePoints} /> 
-    </div>
+    </main>
   )
 }
 

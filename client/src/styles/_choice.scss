@@ -67,7 +67,7 @@ $choices-padding: clamp(1rem, 5vw, 2.25rem);
       width: calc($choice-size + 75px);
     }
 
-    @media (min-width: 760px) {
+    @media (min-width: 1150px) {
       height: calc($choice-size * 2);
       width: calc($choice-size * 2);
     }
@@ -85,7 +85,11 @@ $choices-padding: clamp(1rem, 5vw, 2.25rem);
     }
 
     &:hover {
-      cursor: pointer;
+      cursor: help;
+    }
+
+    &.correct:hover {
+      cursor: default;
     }
   }
 }
